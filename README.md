@@ -49,7 +49,7 @@ public class PersonMessage extends FlexibleContentMessage {
     @NonNull
     private final String name;
 
-    private List<String> children;
+    private List<String> children = new ArrayList<>();
 
     @JsonCreator
     public PersonMessage(
