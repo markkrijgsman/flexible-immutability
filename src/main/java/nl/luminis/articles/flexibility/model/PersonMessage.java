@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
@@ -31,7 +32,7 @@ public class PersonMessage extends FlexibleContentMessage {
     @NonNull
     private final String name;
 
-    private List<String> children;
+    private List<String> children = new ArrayList<>();
 
     @JsonCreator
     public PersonMessage(

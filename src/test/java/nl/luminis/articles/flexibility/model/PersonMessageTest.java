@@ -44,6 +44,7 @@ public class PersonMessageTest {
         assertThat(person.getDateOfBirth()).isEqualTo(NOW);
         assertThat(person.getGender()).isEqualTo(Gender.FEMALE);
         assertThat(person.getName()).isEqualTo("Jane Doe");
+        assertThat(person.getChildren()).isEmpty();
         assertThat(person.getOtherFields()).isEqualTo(Map.of("foo", "bar"));
     }
 
