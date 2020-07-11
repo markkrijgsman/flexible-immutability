@@ -16,6 +16,7 @@ public class PersonMessageTest {
 
     private static final Instant NOW = Instant.now();
 
+    // There is no test to demonstrate a failing serialization, because our setup does not allow for the creation of invalid objects in the first place!
     @Test
     public void testSerialize() throws JsonProcessingException {
         PersonMessage person = PersonMessage.builder()
@@ -33,15 +34,14 @@ public class PersonMessageTest {
     }
 
     @Test
-    public void testDeserialize() throws JsonProcessingException {
-        String json = "{\"dateOfBirth\":\"" + NOW + "\",\"gender\":\"FEMALE\",\"name\":\"Jane Doe\",\"nationality\":\"Dutch\",\"foo\":\"bar\"}";
+    public void testDeserializeSucceedsOnMissingOptionalProperty() throws JsonProcessingException {
+        String json = "{\"dateOfBirth\":\"" + NOW + "\",\"gender\":\"FEMALE\",\"name\":\"Jane Doe\",\"foo\":\"bar\"}";
 
         PersonMessage person = ObjectMapperFactory.getInstance().readValue(json, PersonMessage.class);
 
         assertThat(person.getDateOfBirth()).isEqualTo(NOW);
         assertThat(person.getGender()).isEqualTo(Gender.FEMALE);
         assertThat(person.getName()).isEqualTo("Jane Doe");
-        assertThat(person.getNationality()).isEqualTo("Dutch");
         assertThat(person.getOtherFields()).isEqualTo(Map.of("foo", "bar"));
     }
 
@@ -55,7 +55,7 @@ public class PersonMessageTest {
     }
 
     @Test
-    public void testValidationFailsOnMissingRequiredProperty() {
+    public void testObjectCreationFailsOnMissingRequiredProperty() {
         assertThatThrownBy(() -> PersonMessage.builder()
             .gender(Gender.MALE)
             .name("John Doe")
@@ -65,7 +65,7 @@ public class PersonMessageTest {
     }
 
     @Test
-    public void testValidationSucceedsOnMissingOptionalProperty() {
+    public void testObjectCreationSucceedsOnMissingOptionalProperty() {
         assertThatCode(() -> PersonMessage.builder()
             .dateOfBirth(Instant.now())
             .gender(Gender.MALE)
@@ -75,7 +75,7 @@ public class PersonMessageTest {
     }
 
     @Test
-    public void testToMap() {
+    public void testObjectToMap() {
         PersonMessage person = PersonMessage.builder()
             .dateOfBirth(NOW)
             .gender(Gender.FEMALE)
