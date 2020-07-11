@@ -73,10 +73,10 @@ Take note of the following things:
 - I'm using `@JsonProperty` on constructor parameters to mark properties required for Jackson. These cannot go on the fields.
 - I'm using `@JsonCreator` on the constructor to indicate that this particular constructor needs to be used for deserialization.
 - `@JsonIgnore` is required in order to avoid serializing the `isAdult()` method.
-- I'm using `@Getter` only and do not need `@NoArgsConstructor` or `@AllArgsConstructor`, which would take away from an immutable data model.
+- I'm using `@Getter` only and do not need `@Setter`, `@NoArgsConstructor` or `@AllArgsConstructor`, which would take away from an immutable data model.
 - I'm using `@SuperBuilder` to let Lombok generate a builder which will be the only way of instantiating my data class.
-- I can use `myInstance.toBuilder` if I want to create a copy of my immutable object because of the usage of `toBuilder = true` on my `@SuperBuilder` annotation.
-- I'm using `@JsonInclude` to exclude empty fields when serializing (e.g. null fields, empty lists and such).
+- I can use `myInstance.toBuilder()` if I want to create a copy of my immutable object because of the usage of `toBuilder = true` on my `@SuperBuilder` annotation.
+- I'm using `@JsonInclude` to exclude empty fields when serializing (e.g. null fields, empty lists or strings and such).
 
 This setup allows us to construct instances of our class with Lombok's builder pattern with validation that automatically fires for required fields:
 
