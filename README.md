@@ -90,7 +90,7 @@ PersonMessage.builder()
 
 Also see [this unittest][3] for usage examples.
 
-## Flexibilty
+## Flexibility
 
 This satisfies requirements 1 through 3. For requirement 4, I'm creating a super class for the above class to extend:
 
