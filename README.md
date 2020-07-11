@@ -11,7 +11,7 @@ My requirements for this data model are:
 
 **1\. Must be immutable**
 
-**2\. Must be able to distinguish between required and optional fields, both during (de-)serialization and during object creation**
+**2\. Must be able to distinguish between required and optional fields, regardless of whether we instantiate the object from code or from JSON**
 
 **3\. Creation of the object must fail with an exception when required fields are missing**
 
@@ -49,7 +49,7 @@ public class PersonMessage extends FlexibleContentMessage {
     @NonNull
     private final String name;
 
-    private String nationality;
+    private List<String> children;
 
     @JsonCreator
     public PersonMessage(
@@ -71,6 +71,7 @@ public class PersonMessage extends FlexibleContentMessage {
 Take note of the following things:
 - I'm using `@NonNull` on fields to mark properties required for Lombok. These cannot go on the constructor.
 - I'm using `@JsonProperty` on constructor parameters to mark properties required for Jackson. These cannot go on the fields.
+- I'm using `@JsonCreator` on the constructor to indicate that this particular constructor needs to be used for deserialization.
 - `@JsonIgnore` is required in order to avoid serializing the `isAdult()` method.
 - I'm using `@Getter` only and do not need `@NoArgsConstructor` or `@AllArgsConstructor`, which would take away from an immutable data model.
 - I'm using `@SuperBuilder` to let Lombok generate a builder which will be the only way of instantiating my data class.
@@ -124,7 +125,7 @@ public abstract class FlexibleContentMessage {
 
 Note the usage of `@JsonAnyGetter` and `@JsonAnySetter`. Furthermore, note that the `@JsonAnySetter` is private. 
 This allows Jackson to set all unmapped fields when deserializing but doesn't expose the setter to any users of our data model.
-I've also added a `toMap()` method for ease of use.
+I've also added a `toMap()` method for ease of use. When doing this, make sure that you [reuse your ObjectMapper][4].
 
 ## Dependencies
 
@@ -161,9 +162,10 @@ The Maven dependencies involved for this setup are as follows:
 The first two dependencies pull in the Jackson annotations and ObjectMapper functionality, respectively. 
 We use `jackson-datatype-jsr310` for proper serialization of the Instant class and use `jackson-module-paranamer` to help Jackson deserialize without us having to define an empty constructor (and thus taking away from our data model's immutability).
 
-The implementation of all these examples and code snippets can be found on my Github repository [here][4]. 
+The implementation of all these examples and code snippets can be found on my Github repository [here][5]. 
 
 [1]: https://projectlombok.org
 [2]: https://github.com/FasterXML/jackson
 [3]: https://github.com/markkrijgsman/flexible-immutability/blob/master/src/test/java/nl/luminis/articles/flexibility/model/PersonMessageTest.java
-[4]: https://github.com/markkrijgsman/flexible-immutability
+[4]: https://fasterxml.github.io/jackson-databind/javadoc/2.6/com/fasterxml/jackson/databind/ObjectMapper.html
+[5]: https://github.com/markkrijgsman/flexible-immutability

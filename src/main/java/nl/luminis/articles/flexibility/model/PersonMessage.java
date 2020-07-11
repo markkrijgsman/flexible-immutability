@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.Period;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -15,7 +16,6 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @ToString
 @SuperBuilder(toBuilder = true)
-@JsonInclude(Include.NON_EMPTY)
 public class PersonMessage extends FlexibleContentMessage {
 
     public enum Gender {
@@ -31,7 +31,7 @@ public class PersonMessage extends FlexibleContentMessage {
     @NonNull
     private final String name;
 
-    private String nationality;
+    private List<String> children;
 
     @JsonCreator
     public PersonMessage(
