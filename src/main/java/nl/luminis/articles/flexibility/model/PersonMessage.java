@@ -1,5 +1,6 @@
 package nl.luminis.articles.flexibility.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -22,20 +23,21 @@ public class PersonMessage extends FlexibleContentMessage {
     }
 
     @NonNull
-    @JsonProperty(required = true)
     private final Instant dateOfBirth;
 
     @NonNull
-    @JsonProperty(required = true)
     private final Gender gender;
 
     @NonNull
-    @JsonProperty(required = true)
     private final String name;
 
     private String nationality;
 
-    public PersonMessage(Instant dateOfBirth, Gender gender, String name) {
+    @JsonCreator
+    public PersonMessage(
+        @JsonProperty(required = true) Instant dateOfBirth,
+        @JsonProperty(required = true) Gender gender,
+        @JsonProperty(required = true) String name) {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.name = name;

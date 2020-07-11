@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.time.Instant;
 import java.util.Map;
 import nl.luminis.articles.flexibility.model.PersonMessage.Gender;
@@ -17,7 +18,7 @@ public class PersonMessageTest {
 
     @Test
     public void testSerialize() throws JsonProcessingException {
-        PersonMessage personMessage = PersonMessage.builder()
+        PersonMessage person = PersonMessage.builder()
             .dateOfBirth(NOW)
             .gender(Gender.FEMALE)
             .name("Jane Doe")
@@ -25,7 +26,7 @@ public class PersonMessageTest {
             .otherFields(Map.of("foo", "bar"))
             .build();
 
-        String json = ObjectMapperFactory.getInstance().writeValueAsString(personMessage);
+        String json = ObjectMapperFactory.getInstance().writeValueAsString(person);
 
         assertThat(json)
             .isEqualTo("{\"dateOfBirth\":\"" + NOW + "\",\"gender\":\"FEMALE\",\"name\":\"Jane Doe\",\"nationality\":\"Dutch\",\"foo\":\"bar\"}");
@@ -35,36 +36,26 @@ public class PersonMessageTest {
     public void testDeserialize() throws JsonProcessingException {
         String json = "{\"dateOfBirth\":\"" + NOW + "\",\"gender\":\"FEMALE\",\"name\":\"Jane Doe\",\"nationality\":\"Dutch\",\"foo\":\"bar\"}";
 
-        PersonMessage personMessage = ObjectMapperFactory.getInstance().readValue(json, PersonMessage.class);
+        PersonMessage person = ObjectMapperFactory.getInstance().readValue(json, PersonMessage.class);
 
-        assertThat(personMessage.getDateOfBirth()).isEqualTo(NOW);
-        assertThat(personMessage.getGender()).isEqualTo(Gender.FEMALE);
-        assertThat(personMessage.getName()).isEqualTo("Jane Doe");
-        assertThat(personMessage.getNationality()).isEqualTo("Dutch");
-        assertThat(personMessage.getOtherFields()).isEqualTo(Map.of("foo", "bar"));
+        assertThat(person.getDateOfBirth()).isEqualTo(NOW);
+        assertThat(person.getGender()).isEqualTo(Gender.FEMALE);
+        assertThat(person.getName()).isEqualTo("Jane Doe");
+        assertThat(person.getNationality()).isEqualTo("Dutch");
+        assertThat(person.getOtherFields()).isEqualTo(Map.of("foo", "bar"));
     }
 
     @Test
-    public void testToMap() {
-        PersonMessage personMessage = PersonMessage.builder()
-            .dateOfBirth(NOW)
-            .gender(Gender.FEMALE)
-            .name("Jane Doe")
-            .nationality("Dutch")
-            .otherFields(Map.of("foo", "bar"))
-            .build();
+    public void testDeserializeFailsOnMissingRequiredProperty() {
+        String json = "{\"gender\":\"FEMALE\",\"name\":\"Jane Doe\",\"nationality\":\"Dutch\",\"foo\":\"bar\"}";
 
-        assertThat(personMessage.toMap()).isEqualTo(Map.of(
-            "dateOfBirth", NOW.toString(),
-            "gender", Gender.FEMALE.toString(),
-            "name", "Jane Doe",
-            "nationality", "Dutch",
-            "foo", "bar"
-        ));
+        assertThatThrownBy(() -> ObjectMapperFactory.getInstance().readValue(json, PersonMessage.class))
+            .isInstanceOf(MismatchedInputException.class)
+            .hasMessageContaining("Missing required creator property 'dateOfBirth'");
     }
 
     @Test
-    public void testFailsOnMissingRequiredProperty() {
+    public void testValidationFailsOnMissingRequiredProperty() {
         assertThatThrownBy(() -> PersonMessage.builder()
             .gender(Gender.MALE)
             .name("John Doe")
@@ -74,12 +65,51 @@ public class PersonMessageTest {
     }
 
     @Test
-    public void testSucceedsOnMissingOptionalProperty() {
+    public void testValidationSucceedsOnMissingOptionalProperty() {
         assertThatCode(() -> PersonMessage.builder()
             .dateOfBirth(Instant.now())
             .gender(Gender.MALE)
             .name("John Doe")
             .build()
         ).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void testToMap() {
+        PersonMessage person = PersonMessage.builder()
+            .dateOfBirth(NOW)
+            .gender(Gender.FEMALE)
+            .name("Jane Doe")
+            .nationality("Dutch")
+            .otherFields(Map.of("foo", "bar"))
+            .build();
+
+        assertThat(person.toMap()).isEqualTo(Map.of(
+            "dateOfBirth", NOW.toString(),
+            "gender", Gender.FEMALE.toString(),
+            "name", "Jane Doe",
+            "nationality", "Dutch",
+            "foo", "bar"
+        ));
+    }
+
+    @Test
+    public void testCopyImmutableObject() {
+        PersonMessage person = PersonMessage.builder()
+            .dateOfBirth(NOW)
+            .gender(Gender.MALE)
+            .name("John Doe")
+            .nationality("Dutch")
+            .otherFields(Map.of("foo", "bar"))
+            .build();
+
+        PersonMessage newPerson = person.toBuilder().name("Richard Doe").build();
+
+        assertThat(newPerson).isNotEqualTo(person);
+        assertThat(newPerson.getDateOfBirth()).isEqualTo(NOW);
+        assertThat(newPerson.getGender()).isEqualTo(Gender.MALE);
+        assertThat(newPerson.getName()).isEqualTo("Richard Doe");
+        assertThat(newPerson.getNationality()).isEqualTo("Dutch");
+        assertThat(newPerson.getOtherFields()).isEqualTo(Map.of("foo", "bar"));
     }
 }
