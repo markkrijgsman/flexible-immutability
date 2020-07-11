@@ -1,4 +1,4 @@
-# Flexible immutability
+# Flexible immutability with Jackson and Lombok
 
 When modelling my data classes, I often find myself combining [Lombok][1] and [Jackson][2]. 
 However, these frameworks may bite when combining annotations. For example: 
