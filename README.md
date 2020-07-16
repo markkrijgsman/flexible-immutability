@@ -1,5 +1,7 @@
 # Flexible immutability with Jackson and Lombok
 
+**This blog describes how to model JSON serializable data classes in a clean way, allowing for immutability at compile time and flexibility at runtime.**
+
 When modelling my data classes, I often find myself combining [Lombok][1] and [Jackson][2]. 
 However, these frameworks may bite when combining annotations. For example: 
 * Some validations go on the constructor, some don't.
