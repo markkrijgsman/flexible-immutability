@@ -14,7 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <version.com.fasterxml.jackson.core>2.11.1</version.com.fasterxml.jackson.core>
-        <version.junit>4.13</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.org.assertj>3.16.1</version.org.assertj>
         <version.org.projectlombok>1.18.12</version.org.projectlombok>
     </properties>
